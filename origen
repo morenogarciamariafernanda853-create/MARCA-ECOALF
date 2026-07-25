@@ -1,0 +1,462 @@
+import { useState } from "react";
+
+const C = {
+  bg: "#F5F1E8",
+  navy: "#0E2A35",
+  teal: "#3E9C8F",
+  tealDeep: "#28695F",
+  sand: "#D8C6A1",
+  ink: "#16211F",
+  rust: "#A85D3A",
+  paper: "#FBF9F4",
+  ringBlue: "#3E7C9C",
+};
+
+const FONTS = `
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Space+Grotesk:wght@400;500;700&display=swap');
+`;
+
+function Label({ children, style }) {
+  return (
+    <p
+      className="text-[10px] uppercase"
+      style={{ color: C.tealDeep, fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.12em", ...style }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function NetThread({ color = C.teal, width = 220, height = 16 }) {
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none">
+      <path
+        d={`M0 ${height / 2} Q ${width * 0.125} 0, ${width * 0.25} ${height / 2} T ${width * 0.5} ${height / 2} T ${width * 0.75} ${height / 2} T ${width} ${height / 2}`}
+        stroke={color}
+        strokeWidth="1.5"
+        strokeDasharray="1 7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function StatCard({ label, value, unit, accent }) {
+  return (
+    <div className="rounded-2xl p-3 flex flex-col justify-between" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+      <span className="text-[10px] uppercase tracking-wide" style={{ color: C.tealDeep, fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.08em" }}>
+        {label}
+      </span>
+      <span className="text-2xl font-semibold mt-1" style={{ color: accent || C.navy, fontFamily: "'Fraunces', serif" }}>
+        {value}
+        <span className="text-xs font-normal ml-1" style={{ color: C.ink, opacity: 0.6 }}>{unit}</span>
+      </span>
+    </div>
+  );
+}
+
+/* ---------- 1. ORIGEN VIVO ---------- */
+
+function FishermanCard() {
+  return (
+    <div className="rounded-2xl p-3 flex gap-3 items-center mb-3" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+      <div className="w-14 h-14 rounded-full flex items-center justify-center shrink-0" style={{ background: C.navy }}>
+        <span style={{ color: C.sand, fontFamily: "'Fraunces', serif", fontSize: 18 }}>JM</span>
+      </div>
+      <div className="min-w-0">
+        <p className="text-[13px] font-medium" style={{ color: C.navy, fontFamily: "'Space Grotesk', sans-serif" }}>Jordi Martí</p>
+        <p className="text-[10px]" style={{ color: C.ink, opacity: 0.6 }}>Puerto de Tarragona · 8 años colaborando</p>
+        <p className="text-[10px] italic mt-1" style={{ color: C.tealDeep }}>"Gracias por ayudar a limpiar el Mediterráneo."</p>
+      </div>
+    </div>
+  );
+}
+
+function MiniMap() {
+  return (
+    <div className="rounded-2xl p-3 mb-3" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+      <svg viewBox="0 0 240 100" width="100%" height="90">
+        <path d="M5 70 Q 60 40, 110 55 T 235 45" stroke={C.sand} strokeWidth="10" fill="none" strokeLinecap="round" opacity="0.5" />
+        <circle cx="70" cy="20" r="3" fill={C.tealDeep} />
+        <text x="78" y="24" fontSize="8" fill={C.ink} fontFamily="'Space Grotesk', sans-serif">Mediterráneo</text>
+        <line x1="70" y1="24" x2="120" y2="48" stroke={C.tealDeep} strokeWidth="1" strokeDasharray="2 3" />
+        <circle cx="120" cy="50" r="3.5" fill={C.rust} />
+        <text x="128" y="54" fontSize="8" fill={C.ink} fontFamily="'Space Grotesk', sans-serif">Tarragona</text>
+        <line x1="120" y1="53" x2="150" y2="72" stroke={C.tealDeep} strokeWidth="1" strokeDasharray="2 3" />
+        <circle cx="150" cy="75" r="3" fill={C.navy} />
+        <text x="158" y="79" fontSize="8" fill={C.ink} fontFamily="'Space Grotesk', sans-serif">Punto de recogida</text>
+      </svg>
+      <p className="text-[9px] text-center mt-1" style={{ color: C.ink, opacity: 0.4 }}>mapa conceptual del recorrido de la red</p>
+    </div>
+  );
+}
+
+const LIFE_STAGES = [
+  { icon: "🌊", label: "Recuperación" },
+  { icon: "🧵", label: "Producción" },
+  { icon: "🛍️", label: "Compra" },
+  { icon: "🪡", label: "Reparación" },
+  { icon: "♻️", label: "Segunda vida" },
+  { icon: "❤️", label: "Legado" },
+];
+
+function LifeTimeline({ currentIndex = 2 }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      {LIFE_STAGES.map((s, i) => (
+        <div key={s.label} className="flex items-center gap-2">
+          <div className="flex flex-col items-center" style={{ width: 22 }}>
+            <span
+              className="w-6 h-6 rounded-full flex items-center justify-center text-[11px]"
+              style={{ background: i <= currentIndex ? C.teal : C.paper, border: `1px solid ${i <= currentIndex ? C.teal : C.sand}` }}
+            >
+              {s.icon}
+            </span>
+            {i < LIFE_STAGES.length - 1 && (
+              <span style={{ width: 1.5, height: 14, background: i < currentIndex ? C.teal : C.sand }} />
+            )}
+          </div>
+          <span
+            className="text-[11px] pb-3"
+            style={{ color: C.ink, opacity: i <= currentIndex ? 0.85 : 0.4, fontFamily: "'Space Grotesk', sans-serif", fontWeight: i === currentIndex ? 600 : 400 }}
+          >
+            {s.label}
+            {i === currentIndex && <span style={{ color: C.tealDeep }}> · ahora</span>}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OrigenVivoScreen() {
+  const [scanned, setScanned] = useState(false);
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="px-5 pt-3 pb-1">
+        <Label>Origen Vivo</Label>
+        <h2 className="text-lg leading-tight mt-0.5" style={{ color: C.navy, fontFamily: "'Fraunces', serif", fontWeight: 600 }}>
+          Chaqueta Bering
+        </h2>
+        <p className="text-xs mt-0.5" style={{ color: C.ink, opacity: 0.55 }}>Lote #482 · Talla M</p>
+      </div>
+
+      {!scanned ? (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 gap-4">
+          <div className="w-32 h-32 rounded-3xl flex items-center justify-center relative" style={{ background: C.navy }}>
+            <div className="absolute inset-3 rounded-2xl" style={{ border: `1.5px dashed ${C.teal}` }} />
+            <span className="text-3xl" style={{ color: C.sand }}>◐</span>
+          </div>
+          <p className="text-xs text-center leading-relaxed" style={{ color: C.ink, opacity: 0.65 }}>
+            Escanea la etiqueta para ver
+            <br />
+            su historia completa
+          </p>
+          <button
+            onClick={() => setScanned(true)}
+            className="px-6 py-2.5 rounded-full text-sm font-medium"
+            style={{ background: C.teal, color: C.paper, fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            Escanear etiqueta
+          </button>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-5 pb-4">
+          <div className="flex justify-center py-1"><NetThread /></div>
+
+          <FishermanCard />
+          <MiniMap />
+
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <StatCard label="Material" value="87" unit="% reciclado" />
+            <StatCard label="CO₂ evitado" value="4.2" unit="kg" accent={C.tealDeep} />
+          </div>
+
+          <Label style={{ marginBottom: 6 }}>Ciclo de vida de esta prenda</Label>
+          <LifeTimeline currentIndex={2} />
+
+          <button onClick={() => setScanned(false)} className="mt-2 text-[11px] underline" style={{ color: C.tealDeep, fontFamily: "'Space Grotesk', sans-serif" }}>
+            Volver a escanear
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------- 2. IMPACT SCORE (anillos estilo Fitness) ---------- */
+
+function Ring({ pct, color, size = 84, stroke = 10 }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size / 2} cy={size / 2} r={r} stroke={C.sand} strokeWidth={stroke} fill="none" opacity="0.5" />
+      <circle
+        cx={size / 2} cy={size / 2} r={r} stroke={color} strokeWidth={stroke} fill="none"
+        strokeDasharray={c} strokeDashoffset={c - (Math.min(pct, 100) / 100) * c} strokeLinecap="round"
+        style={{ transition: "stroke-dashoffset 0.6s ease" }}
+      />
+    </svg>
+  );
+}
+
+function RingRow({ icon, label, value, unit, pct, color }) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl p-2.5" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+      <div className="relative shrink-0" style={{ width: 56, height: 56 }}>
+        <Ring pct={pct} color={color} size={56} stroke={7} />
+        <span className="absolute inset-0 flex items-center justify-center text-base">{icon}</span>
+      </div>
+      <div>
+        <p className="text-[10px] uppercase" style={{ color: C.tealDeep, fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.06em" }}>{label}</p>
+        <p style={{ color: C.navy, fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 600 }}>
+          {value} <span style={{ fontSize: 11, color: C.ink, opacity: 0.6, fontFamily: "'Space Grotesk', sans-serif" }}>{unit}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ImpactoScreen() {
+  const [score, setScore] = useState(1240);
+  const [bump, setBump] = useState(null);
+
+  const actions = [
+    { key: "reparar", label: "Reparar una prenda", points: 40 },
+    { key: "revender", label: "Revender en el Circular Hub", points: 60 },
+    { key: "extender", label: "Extender un año de vida útil", points: 30 },
+  ];
+
+  const level = score >= 1500 ? 3 : score >= 900 ? 2 : 1;
+  const levelLabel = ["Guardián nivel 1", "Guardián nivel 2", "Guardián nivel 3"][level - 1];
+
+  function addPoints(a) {
+    setScore((s) => s + a.points);
+    setBump(a.key);
+    setTimeout(() => setBump(null), 700);
+  }
+
+  return (
+    <div className="flex flex-col h-full px-5 pt-3 pb-4 overflow-y-auto">
+      <Label>Mi impacto</Label>
+      <div className="flex items-end justify-between mt-1 mb-3">
+        <h2 className="text-3xl" style={{ color: C.navy, fontFamily: "'Fraunces', serif", fontWeight: 600 }}>
+          {score.toLocaleString("es-ES")}
+        </h2>
+        <span className="text-xs mb-1 px-2.5 py-1 rounded-full" style={{ background: C.sand, color: C.navy, fontFamily: "'Space Grotesk', sans-serif" }}>
+          {levelLabel}
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-2 mb-4">
+        <RingRow icon="🌍" label="CO₂ evitado" value="86" unit="kg" pct={72} color={C.teal} />
+        <RingRow icon="⏳" label="Vida útil ganada" value="3.5" unit="años" pct={55} color={C.ringBlue} />
+        <RingRow icon="♻️" label="Residuo recuperado" value="12" unit="kg" pct={90} color={C.rust} />
+      </div>
+
+      <Label style={{ marginBottom: 6 }}>Cómo sumar más puntos</Label>
+      <div className="flex flex-col gap-2">
+        {actions.map((a) => (
+          <button
+            key={a.key}
+            onClick={() => addPoints(a)}
+            className="flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-transform"
+            style={{ background: C.paper, border: `1px solid ${C.sand}`, transform: bump === a.key ? "scale(0.97)" : "scale(1)" }}
+          >
+            <span className="text-xs" style={{ color: C.ink, fontFamily: "'Space Grotesk', sans-serif" }}>{a.label}</span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: C.teal, color: C.paper }}>+{a.points}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- 3. IA STYLIST ---------- */
+
+const OUTFIT_POOL = [
+  ["Chaqueta Bering", "Pantalón Yoko", "Bota Reku"],
+  ["Chaqueta Bering", "Camisa Doko", "Zapatilla Ecoalf One"],
+  ["Chaqueta Bering", "Vestido Tunas", "Bolso Cortina"],
+  ["Chaqueta Bering", "Jersey Fjord", "Gorro Amazonia"],
+];
+
+function OutfitCard({ items, colors }) {
+  return (
+    <div className="rounded-2xl p-3" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+      <div className="flex gap-1.5 mb-2">
+        {colors.map((col, i) => (
+          <div key={i} className="flex-1 h-12 rounded-lg" style={{ background: col }} />
+        ))}
+      </div>
+      <ul className="text-[11px] leading-snug" style={{ color: C.ink, fontFamily: "'Space Grotesk', sans-serif" }}>
+        {items.map((it) => <li key={it}>· {it}</li>)}
+      </ul>
+    </div>
+  );
+}
+
+function StylistScreen() {
+  const [round, setRound] = useState(0);
+  const palette = [
+    [C.navy, C.sand, C.teal],
+    [C.rust, C.paper, C.navy],
+    [C.tealDeep, C.sand, C.rust],
+  ];
+
+  const picks = [0, 1, 2].map((i) => OUTFIT_POOL[(round + i) % OUTFIT_POOL.length]);
+
+  return (
+    <div className="flex flex-col h-full px-5 pt-3 pb-4 overflow-y-auto">
+      <Label>IA Stylist</Label>
+      <div className="flex items-center gap-3 mt-2 mb-3">
+        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: C.navy }}>
+          <span style={{ color: C.sand, fontFamily: "'Fraunces', serif" }}>TÚ</span>
+        </div>
+        <p className="text-[12px] leading-snug" style={{ color: C.ink, fontFamily: "'Space Grotesk', sans-serif" }}>
+          Combina tu <strong style={{ color: C.tealDeep }}>Chaqueta Bering</strong> con estas 3 propuestas:
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2 mb-4">
+        {picks.map((items, i) => (
+          <OutfitCard key={i} items={items} colors={palette[i]} />
+        ))}
+      </div>
+
+      <button
+        onClick={() => setRound((r) => r + 1)}
+        className="px-5 py-2.5 rounded-full text-sm font-medium self-center"
+        style={{ background: C.teal, color: C.paper, fontFamily: "'Space Grotesk', sans-serif" }}
+      >
+        Crear nuevo look
+      </button>
+
+      <p className="text-[10px] text-center mt-3" style={{ color: C.ink, opacity: 0.45 }}>
+        Las combinaciones priorizan piezas de tu ropero y del Circular Hub antes que producto nuevo.
+      </p>
+    </div>
+  );
+}
+
+/* ---------- 4. CIRCULAR HUB ---------- */
+
+const HUB_STEPS = ["Enviar", "Recoger", "Reparar", "Revender"];
+
+function CircularHubScreen() {
+  const [step, setStep] = useState(0);
+
+  return (
+    <div className="flex flex-col h-full px-5 pt-3 pb-4 overflow-y-auto">
+      <Label>Circular Hub</Label>
+      <h2 className="text-lg mt-0.5 mb-3" style={{ color: C.navy, fontFamily: "'Fraunces', serif", fontWeight: 600 }}>
+        Chaqueta Bering · 2 años de uso
+      </h2>
+
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        <StatCard label="Estado" value="Bueno" unit="" />
+        <StatCard label="Valor estimado" value="38" unit="€ crédito" accent={C.tealDeep} />
+      </div>
+
+      <Label style={{ marginBottom: 8 }}>Proceso</Label>
+      <div className="flex items-center justify-between mb-4">
+        {HUB_STEPS.map((s, i) => (
+          <div key={s} className="flex flex-col items-center gap-1" style={{ width: 60 }}>
+            <button
+              onClick={() => setStep(i)}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[11px]"
+              style={{ background: i <= step ? C.teal : C.paper, border: `1px solid ${i <= step ? C.teal : C.sand}`, color: i <= step ? C.paper : C.ink }}
+            >
+              {i + 1}
+            </button>
+            <span className="text-[9px] text-center" style={{ color: C.ink, opacity: i <= step ? 0.85 : 0.45, fontFamily: "'Space Grotesk', sans-serif" }}>
+              {s}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <button
+        onClick={() => setStep((s) => Math.min(s + 1, HUB_STEPS.length - 1))}
+        className="px-5 py-2.5 rounded-full text-sm font-medium self-center"
+        style={{ background: C.navy, color: C.paper, fontFamily: "'Space Grotesk', sans-serif" }}
+      >
+        {step >= HUB_STEPS.length - 1 ? "Proceso completado" : `Marcar "${HUB_STEPS[step + 1]}"`}
+      </button>
+
+      <p className="text-[10px] text-center mt-3" style={{ color: C.ink, opacity: 0.45 }}>
+        El crédito generado se puede usar en la siguiente compra o en el Ecoalf Impact Score.
+      </p>
+    </div>
+  );
+}
+
+/* ---------- APP SHELL ---------- */
+
+const TABS = [
+  { key: "origen", label: "Origen Vivo", icon: "🌊" },
+  { key: "impacto", label: "Impact Score", icon: "📊" },
+  { key: "stylist", label: "IA Stylist", icon: "🤖" },
+  { key: "hub", label: "Circular Hub", icon: "♻️" },
+];
+
+function TabButton({ active, icon, label, onClick }) {
+  return (
+    <button onClick={onClick} className="flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-2xl transition-all" style={{ background: active ? C.navy : "transparent" }}>
+      <span className="text-[13px]">{icon}</span>
+      <span className="text-[8px]" style={{ color: active ? C.paper : C.navy, fontFamily: "'Space Grotesk', sans-serif", fontWeight: active ? 600 : 400 }}>
+        {label}
+      </span>
+    </button>
+  );
+}
+
+export default function EcoalfMockup() {
+  const [tab, setTab] = useState("origen");
+
+  const screens = {
+    origen: <OrigenVivoScreen />,
+    impacto: <ImpactoScreen />,
+    stylist: <StylistScreen />,
+    hub: <CircularHubScreen />,
+  };
+
+  return (
+    <div className="w-full min-h-[680px] flex items-center justify-center py-8 px-4" style={{ background: `radial-gradient(circle at 20% 15%, ${C.sand}33, transparent 45%), ${C.bg}` }}>
+      <style>{FONTS}</style>
+
+      <div className="flex flex-col items-center gap-4">
+        <div className="text-center">
+          <p className="text-[11px] uppercase" style={{ color: C.tealDeep, fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.2em" }}>Ecoalf</p>
+          <p className="text-xs mt-0.5" style={{ color: C.ink, opacity: 0.5 }}>Ecosistema circular · Origen Vivo → Impact Score → IA Stylist → Circular Hub</p>
+        </div>
+
+        <div className="relative" style={{ width: 320, height: 660, borderRadius: "2.75rem", background: C.navy, padding: "14px", boxShadow: "0 30px 60px -20px rgba(14,42,53,0.45)" }}>
+          <div className="w-full h-full flex flex-col overflow-hidden" style={{ background: C.bg, borderRadius: "2rem" }}>
+            <div className="flex justify-center pt-2">
+              <div className="w-20 h-1.5 rounded-full" style={{ background: C.navy, opacity: 0.15 }} />
+            </div>
+
+            <div className="flex-1 pt-1 overflow-hidden">
+              {screens[tab]}
+            </div>
+
+            <div className="px-3 pb-3 pt-1">
+              <div className="flex gap-1 p-1 rounded-2xl" style={{ background: C.paper, border: `1px solid ${C.sand}` }}>
+                {TABS.map((t) => (
+                  <TabButton key={t.key} active={tab === t.key} icon={t.icon} label={t.label} onClick={() => setTab(t.key)} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-[10px] text-center max-w-[290px]" style={{ color: C.ink, opacity: 0.45 }}>
+          Prototipo conceptual. La foto del pescador y el mapa son ilustrativos (avatar y esquema simplificado), no fotografías ni cartografía reales.
+        </p>
+      </div>
+    </div>
+  );
+}
