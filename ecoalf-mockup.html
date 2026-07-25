@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ecoalf — Ecosistema circular (mockup)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root{
+    --bg:#F5F1E8;
+    --navy:#0E2A35;
+    --teal:#3E9C8F;
+    --teal-deep:#28695F;
+    --sand:#D8C6A1;
+    --ink:#16211F;
+    --rust:#A85D3A;
+    --paper:#FBF9F4;
+    --ring-blue:#3E7C9C;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Space Grotesk', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(216,198,161,.55) 0%, transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(62,156,143,.35) 0%, transparent 45%),
+      var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* ambient "net" texture behind everything — pure CSS, no external assets */
+  body::before{
+    content:'';
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(251,249,244,.05) 0px, rgba(251,249,244,.05) 1px, transparent 1px, transparent 26px),
+      repeating-linear-gradient(25deg, rgba(251,249,244,.05) 0px, rgba(251,249,244,.05) 1px, transparent 1px, transparent 26px);
+  }
+  .hero-fade{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(circle at 50% 22%, transparent 0%, var(--bg) 60%);
+  }
+
+  .stage{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:18px; }
+
+  .brand{ text-align:center; }
+  .brand .eyebrow{
+    font-size:11px; text-transform:uppercase; letter-spacing:.2em;
+    color:var(--paper); font-weight:700;
+  }
+  .brand .sub{ font-size:12px; color:var(--paper); opacity:.85; margin-top:4px; }
+
+  /* illustrated icon panel — replaces "photo" slots with on-brand SVG art */
+  .art-panel{
+    position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--navy), var(--teal-deep));
+  }
+  .art-panel svg{ width:70%; height:70%; }
+
+  .phone{
+    width:320px; height:672px; border-radius:2.75rem; background:var(--navy);
+    padding:14px; box-shadow:0 30px 70px -20px rgba(14,42,53,.55);
+  }
+  .screen{
+    width:100%; height:100%; background:var(--bg); border-radius:2rem;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .notch-wrap{ display:flex; justify-content:center; padding-top:8px; }
+  .notch{ width:80px; height:6px; border-radius:6px; background:var(--navy); opacity:.15; }
+
+  .content{ flex:1; overflow:hidden; position:relative; }
+  .view{ position:absolute; inset:0; display:none; flex-direction:column; overflow-y:auto; padding:12px 20px 16px; }
+  .view.active{ display:flex; }
+
+  .eyebrow-label{
+    font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--teal-deep); margin:0 0 2px;
+  }
+  h2.title{ font-family:'Fraunces', serif; font-weight:600; color:var(--navy); margin:2px 0; }
+  .muted{ color:var(--ink); opacity:.55; font-size:12px; margin:0; }
+
+  /* ---- Origen Vivo ---- */
+  .scan-cta{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; flex:1; text-align:center; padding:0 20px;
+  }
+  .scan-box{
+    width:128px; height:128px; border-radius:24px; background:var(--navy);
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .scan-box::before{
+    content:''; position:absolute; inset:12px; border-radius:16px; border:1.5px dashed var(--teal);
+  }
+  .scan-box svg{ width:44px; height:44px; }
+
+  .btn{
+    border:none; cursor:pointer; font-family:'Space Grotesk', sans-serif; font-weight:600;
+    padding:11px 24px; border-radius:999px; font-size:13px;
+  }
+  .btn-teal{ background:var(--teal); color:var(--paper); }
+  .btn-navy{ background:var(--navy); color:var(--paper); }
+  .btn-link{ background:none; border:none; cursor:pointer; color:var(--teal-deep); text-decoration:underline; font-size:11px; padding:6px 0; align-self:flex-start; }
+
+  .net-thread{ display:flex; justify-content:center; padding:4px 0 8px; }
+
+  .fisherman-card{
+    display:flex; gap:12px; align-items:center; background:var(--paper);
+    border:1px solid var(--sand); border-radius:18px; padding:10px; margin-bottom:12px;
+  }
+  .fisherman-photo{ width:56px; height:56px; border-radius:50%; flex-shrink:0; }
+  .fisherman-card .name{ font-size:13px; font-weight:600; color:var(--navy); margin:0; }
+  .fisherman-card .meta{ font-size:10px; opacity:.6; margin:2px 0; }
+  .fisherman-card .quote{ font-size:10px; font-style:italic; color:var(--teal-deep); margin:4px 0 0; }
+
+  .map-card{ background:var(--paper); border:1px solid var(--sand); border-radius:18px; padding:10px; margin-bottom:12px; }
+  .map-caption{ font-size:9px; text-align:center; opacity:.4; margin:2px 0 0; }
+
+  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .stat-card{ background:var(--paper); border:1px solid var(--sand); border-radius:16px; padding:10px 12px; display:flex; flex-direction:column; gap:2px; }
+  .stat-card .label{ font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal-deep); }
+  .stat-card .value{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; color:var(--navy); }
+  .stat-card .value .unit{ font-family:'Space Grotesk', sans-serif; font-size:11px; font-weight:400; color:var(--ink); opacity:.6; margin-left:3px; }
+
+  .timeline-row{ display:flex; align-items:center; gap:8px; }
+  .timeline-node{ display:flex; flex-direction:column; align-items:center; width:22px; }
+  .timeline-dot{
+    width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:11px; background:var(--paper); border:1px solid var(--sand);
+  }
+  .timeline-dot.done{ background:var(--teal); border-color:var(--teal); }
+  .timeline-line{ width:1.5px; height:14px; background:var(--sand); }
+  .timeline-line.done{ background:var(--teal); }
+  .timeline-label{ font-size:11px; padding-bottom:10px; opacity:.4; }
+  .timeline-label.done{ opacity:.85; }
+  .timeline-label.current{ font-weight:600; opacity:1; }
+  .timeline-label.current .now{ color:var(--teal-deep); }
+
+  /* ---- Impact score ---- */
+  .score-head{ display:flex; align-items:flex-end; justify-content:space-between; margin:4px 0 12px; }
+  .score-number{ font-family:'Fraunces', serif; font-weight:600; font-size:32px; color:var(--navy); }
+  .level-pill{ background:var(--sand); color:var(--navy); font-size:12px; padding:4px 10px; border-radius:999px; margin-bottom:4px; }
+
+  .ring-row{ display:flex; align-items:center; gap:12px; background:var(--paper); border:1px solid var(--sand); border-radius:16px; padding:10px; margin-bottom:8px; }
+  .ring-wrap{ position:relative; width:56px; height:56px; flex-shrink:0; }
+  .ring-wrap svg{ transform:rotate(-90deg); }
+  .ring-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .ring-info .label{ font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal-deep); margin:0; }
+  .ring-info .value{ font-family:'Fraunces', serif; font-size:18px; font-weight:600; color:var(--navy); margin:0; }
+  .ring-info .value .unit{ font-family:'Space Grotesk', sans-serif; font-size:11px; font-weight:400; color:var(--ink); opacity:.6; }
+
+  .action-btn{
+    display:flex; align-items:center; justify-content:space-between; width:100%;
+    background:var(--paper); border:1px solid var(--sand); border-radius:14px;
+    padding:11px 14px; margin-bottom:8px; cursor:pointer; font-family:'Space Grotesk', sans-serif;
+    transition:transform .15s ease;
+  }
+  .action-btn:active{ transform:scale(.97); }
+  .action-btn .txt{ font-size:12px; color:var(--ink); }
+  .action-btn .pts{ font-size:12px; font-weight:700; background:var(--teal); color:var(--paper); padding:2px 9px; border-radius:999px; }
+
+  /* ---- Stylist ---- */
+  .stylist-user{ display:flex; align-items:center; gap:12px; margin:6px 0 12px; }
+  .stylist-avatar{ width:44px; height:44px; border-radius:50%; flex-shrink:0; }
+  .stylist-user p{ font-size:12px; line-height:1.4; margin:0; }
+  .stylist-user strong{ color:var(--teal-deep); }
+
+  .outfit-card{ background:var(--paper); border:1px solid var(--sand); border-radius:16px; padding:10px; margin-bottom:8px; }
+  .outfit-photo{ width:100%; height:96px; border-radius:12px; margin-bottom:8px; }
+  .outfit-card ul{ margin:0; padding:0; list-style:none; font-size:11px; line-height:1.5; }
+
+  .stylist-note{ font-size:10px; text-align:center; opacity:.45; margin-top:10px; }
+
+  /* ---- Circular hub ---- */
+  .hub-photo{ width:100%; height:120px; border-radius:16px; margin:8px 0 12px; }
+  .hub-steps{ display:flex; justify-content:space-between; margin-bottom:14px; }
+  .hub-step{ display:flex; flex-direction:column; align-items:center; gap:4px; width:60px; }
+  .hub-step button{
+    width:28px; height:28px; border-radius:50%; border:1px solid var(--sand); background:var(--paper);
+    color:var(--ink); font-size:11px; cursor:pointer;
+  }
+  .hub-step button.done{ background:var(--teal); border-color:var(--teal); color:var(--paper); }
+  .hub-step span{ font-size:9px; text-align:center; opacity:.45; }
+  .hub-step span.done{ opacity:.85; }
+
+  /* ---- tab bar ---- */
+  .tabbar-wrap{ padding:6px 12px 12px; }
+  .tabbar{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--sand); border-radius:18px; padding:4px; }
+  .tab{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:6px 0; border-radius:14px; background:none; border:none; cursor:pointer;
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .tab .icon{ font-size:13px; }
+  .tab .lbl{ font-size:8px; color:var(--navy); }
+  .tab.active{ background:var(--navy); }
+  .tab.active .lbl{ color:var(--paper); font-weight:600; }
+
+  .caption{ font-size:10px; text-align:center; max-width:290px; color:var(--paper); opacity:.75; }
+</style>
+</head>
+<body>
+
+<div class="hero-fade"></div>
+
+<div class="stage">
+  <div class="brand">
+    <p class="eyebrow">Ecoalf</p>
+    <p class="sub">Ecosistema circular · Origen Vivo → Impact Score → IA Stylist → Circular Hub</p>
+  </div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="notch-wrap"><div class="notch"></div></div>
+
+      <div class="content">
+
+        <!-- ORIGEN VIVO -->
+        <div class="view active" id="view-origen">
+          <p class="eyebrow-label">Origen Vivo</p>
+          <h2 class="title" style="font-size:18px;">Chaqueta Bering</h2>
+          <p class="muted">Lote #482 · Talla M</p>
+
+          <div id="origen-pre" class="scan-cta">
+            <div class="scan-box">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#D8C6A1" stroke-width="1.4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="#3E9C8F" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <p class="muted" style="font-size:12px;">Escanea la etiqueta para ver<br/>su historia completa</p>
+            <button class="btn btn-teal" onclick="revealOrigen()">Escanear etiqueta</button>
+          </div>
+
+          <div id="origen-post" style="display:none;">
+            <div class="net-thread">
+              <svg width="220" height="16" viewBox="0 0 220 16" fill="none">
+                <path d="M0 8 Q 27.5 0, 55 8 T 110 8 T 165 8 T 220 8" stroke="#3E9C8F" stroke-width="1.5" stroke-dasharray="1 7" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <div class="fisherman-card">
+              <div class="art-panel fisherman-photo">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <path d="M6 30 Q24 22 42 30 L38 40 Q24 34 10 40 Z" fill="#D8C6A1"/>
+                  <rect x="22" y="10" width="2" height="20" fill="#FBF9F4"/>
+                  <path d="M24 12 L34 18 L24 22 Z" fill="#FBF9F4"/>
+                  <path d="M4 40 Q24 44 44 40" stroke="#FBF9F4" stroke-width="1.2" opacity="0.6"/>
+                </svg>
+              </div>
+              <div>
+                <p class="name">Jordi Martí</p>
+                <p class="meta">Puerto de Tarragona · 8 años colaborando</p>
+                <p class="quote">"Gracias por ayudar a limpiar el Mediterráneo."</p>
+              </div>
+            </div>
+
+            <div class="map-card">
+              <svg viewBox="0 0 240 100" width="100%" height="90">
+                <path d="M5 70 Q 60 40, 110 55 T 235 45" stroke="#D8C6A1" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.5"/>
+                <circle cx="70" cy="20" r="3" fill="#28695F"/>
+                <text x="78" y="24" font-size="8" fill="#16211F">Mediterráneo</text>
+                <line x1="70" y1="24" x2="120" y2="48" stroke="#28695F" stroke-width="1" stroke-dasharray="2 3"/>
+                <circle cx="120" cy="50" r="3.5" fill="#A85D3A"/>
+                <text x="128" y="54" font-size="8" fill="#16211F">Tarragona</text>
+                <line x1="120" y1="53" x2="150" y2="72" stroke="#28695F" stroke-width="1" stroke-dasharray="2 3"/>
+                <circle cx="150" cy="75" r="3" fill="#0E2A35"/>
+                <text x="158" y="79" font-size="8" fill="#16211F">Punto de recogida</text>
+              </svg>
+              <p class="map-caption">mapa conceptual del recorrido de la red</p>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat-card"><span class="label">Material</span><span class="value">87<span class="unit">% reciclado</span></span></div>
+              <div class="stat-card"><span class="label">CO₂ evitado</span><span class="value" style="color:#28695F;">4.2<span class="unit">kg</span></span></div>
+            </div>
+
+            <p class="eyebrow-label" style="margin-bottom:6px;">Ciclo de vida de esta prenda</p>
+            <div id="timeline"></div>
+
+            <button class="btn-link" onclick="hideOrigen()">Volver a escanear</button>
+          </div>
+        </div>
+
+        <!-- IMPACT SCORE -->
+        <div class="view" id="view-impacto">
+          <p class="eyebrow-label">Mi impacto</p>
+          <div class="score-head">
+            <span class="score-number" id="score-number">1.240</span>
+            <span class="level-pill" id="level-pill">Guardián nivel 2</span>
+          </div>
+
+          <div id="rings"></div>
+
+          <p class="eyebrow-label" style="margin:6px 0;">Cómo sumar más puntos</p>
+          <button class="action-btn" onclick="addPoints(this, 40)">
+            <span class="txt">Reparar una prenda</span><span class="pts">+40</span>
+          </button>
+          <button class="action-btn" onclick="addPoints(this, 60)">
+            <span class="txt">Revender en el Circular Hub</span><span class="pts">+60</span>
+          </button>
+          <button class="action-btn" onclick="addPoints(this, 30)">
+            <span class="txt">Extender un año de vida útil</span><span class="pts">+30</span>
+          </button>
+        </div>
+
+        <!-- IA STYLIST -->
+        <div class="view" id="view-stylist">
+          <p class="eyebrow-label">IA Stylist</p>
+          <div class="stylist-user">
+            <div class="art-panel stylist-avatar">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#FBF9F4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="#FBF9F4" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <p>Combina tu <strong>Chaqueta Bering</strong> con estas 3 propuestas:</p>
+          </div>
+
+          <div id="outfits"></div>
+
+          <button class="btn btn-teal" style="align-self:center;" onclick="shuffleOutfits()">Crear nuevo look</button>
+          <p class="stylist-note">Las combinaciones priorizan piezas de tu ropero y del Circular Hub antes que producto nuevo.</p>
+        </div>
+
+        <!-- CIRCULAR HUB -->
+        <div class="view" id="view-hub">
+          <p class="eyebrow-label">Circular Hub</p>
+          <h2 class="title" style="font-size:18px;">Chaqueta Bering · 2 años de uso</h2>
+
+          <div class="art-panel hub-photo">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M16 8 L24 12 L32 8 L38 14 L34 20 L34 40 L14 40 L14 20 L10 14 Z" stroke="#FBF9F4" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+              <path d="M24 12 L24 20" stroke="#D8C6A1" stroke-width="1.4"/>
+            </svg>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card"><span class="label">Estado</span><span class="value" style="font-size:18px;">Bueno</span></div>
+            <div class="stat-card"><span class="label">Valor estimado</span><span class="value" style="color:#28695F;">38<span class="unit">€ crédito</span></span></div>
+          </div>
+
+          <p class="eyebrow-label" style="margin-bottom:8px;">Proceso</p>
+          <div class="hub-steps" id="hub-steps"></div>
+
+          <button class="btn btn-navy" style="align-self:center;" id="hub-btn" onclick="advanceHub()">Marcar "Recoger"</button>
+          <p class="stylist-note">El crédito generado se puede usar en la siguiente compra o en el Ecoalf Impact Score.</p>
+        </div>
+
+      </div>
+
+      <div class="tabbar-wrap">
+        <div class="tabbar">
+          <button class="tab active" data-tab="origen" onclick="switchTab('origen')"><span class="icon">🌊</span><span class="lbl">Origen Vivo</span></button>
+          <button class="tab" data-tab="impacto" onclick="switchTab('impacto')"><span class="icon">📊</span><span class="lbl">Impact Score</span></button>
+          <button class="tab" data-tab="stylist" onclick="switchTab('stylist')"><span class="icon">🤖</span><span class="lbl">IA Stylist</span></button>
+          <button class="tab" data-tab="hub" onclick="switchTab('hub')"><span class="icon">♻️</span><span class="lbl">Circular Hub</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="caption">Prototipo conceptual. Las ilustraciones son gráficos vectoriales propios en los tonos de marca, no fotografías reales de Ecoalf ni de sus colaboradores.</p>
+</div>
+
+<script>
+  // ---- tabs ----
+  function switchTab(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  }
+
+  // ---- Origen Vivo ----
+  function revealOrigen(){
+    document.getElementById('origen-pre').style.display = 'none';
+    document.getElementById('origen-post').style.display = 'block';
+  }
+  function hideOrigen(){
+    document.getElementById('origen-post').style.display = 'none';
+    document.getElementById('origen-pre').style.display = 'flex';
+  }
+
+  const LIFE_STAGES = [
+    {icon:'🌊', label:'Recuperación'},
+    {icon:'🧵', label:'Producción'},
+    {icon:'🛍️', label:'Compra'},
+    {icon:'🪡', label:'Reparación'},
+    {icon:'♻️', label:'Segunda vida'},
+    {icon:'❤️', label:'Legado'},
+  ];
+  const CURRENT_STAGE = 2;
+
+  function renderTimeline(){
+    const el = document.getElementById('timeline');
+    el.innerHTML = LIFE_STAGES.map((s, i) => {
+      const done = i <= CURRENT_STAGE;
+      const isLast = i === LIFE_STAGES.length - 1;
+      return `
+        <div class="timeline-row">
+          <div class="timeline-node">
+            <div class="timeline-dot ${done ? 'done' : ''}">${s.icon}</div>
+            ${!isLast ? `<div class="timeline-line ${i < CURRENT_STAGE ? 'done' : ''}"></div>` : ''}
+          </div>
+          <span class="timeline-label ${done ? 'done' : ''} ${i === CURRENT_STAGE ? 'current' : ''}">
+            ${s.label}${i === CURRENT_STAGE ? ' <span class="now">· ahora</span>' : ''}
+          </span>
+        </div>`;
+    }).join('');
+  }
+
+  // ---- Impact score ----
+  let score = 1240;
+
+  function ringSvg(pct, color, size, stroke){
+    const r = (size - stroke) / 2;
+    const c = 2 * Math.PI * r;
+    const offset = c - (Math.min(pct,100)/100) * c;
+    return `<svg width="${size}" height="${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="#D8C6A1" stroke-width="${stroke}" fill="none" opacity="0.5"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="none"
+        stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round"
+        style="transition:stroke-dashoffset .6s ease; transform:rotate(-90deg); transform-origin:50% 50%;"/>
+    </svg>`;
+  }
+
+  function renderRings(){
+    const el = document.getElementById('rings');
+    const rows = [
+      {icon:'🌍', label:'CO₂ evitado', value:'86', unit:'kg', pct:72, color:'#3E9C8F'},
+      {icon:'⏳', label:'Vida útil ganada', value:'3.5', unit:'años', pct:55, color:'#3E7C9C'},
+      {icon:'♻️', label:'Residuo recuperado', value:'12', unit:'kg', pct:90, color:'#A85D3A'},
+    ];
+    el.innerHTML = rows.map(r => `
+      <div class="ring-row">
+        <div class="ring-wrap">${ringSvg(r.pct, r.color, 56, 7)}<span class="ring-icon">${r.icon}</span></div>
+        <div class="ring-info">
+          <p class="label">${r.label}</p>
+          <p class="value">${r.value} <span class="unit">${r.unit}</span></p>
+        </div>
+      </div>`).join('');
+  }
+
+  function updateScoreDisplay(){
+    document.getElementById('score-number').textContent = score.toLocaleString('es-ES');
+    const level = score >= 1500 ? 3 : score >= 900 ? 2 : 1;
+    document.getElementById('level-pill').textContent = `Guardián nivel ${level}`;
+  }
+
+  function addPoints(btn, pts){
+    score += pts;
+    updateScoreDisplay();
+    btn.style.transform = 'scale(0.97)';
+    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+  }
+
+  // ---- Stylist ----
+  const GARMENT_ICONS = {
+    jacket: '<path d="M8 5 L12 7 L16 5 L19 8 L17 11 L17 19 L7 19 L7 11 L5 8 Z" />',
+    pants:  '<path d="M8 5 H16 L17 19 L13 19 L12 11 L11 19 L7 19 Z" />',
+    dress:  '<path d="M9 5 H15 L17 19 H7 Z" />',
+    shoe:   '<path d="M5 15 H12 L17 12 L19 16 L19 17 H5 Z" />',
+    bag:    '<path d="M8 8 H16 V19 H8 Z M9 8 C9 5 15 5 15 8" fill="none" stroke-width="1.4" />',
+    hat:    '<path d="M6 15 H18 L15 8 H9 Z" />',
+    top:    '<path d="M9 5 L12 7 L15 5 L18 9 L15 11 L15 19 H9 V11 L6 9 Z" />',
+  };
+  function garmentIcon(kind, color){
+    return `<svg viewBox="0 0 24 24" width="34" height="34" fill="${color}" stroke="${color}">${GARMENT_ICONS[kind] || GARMENT_ICONS.top}</svg>`;
+  }
+
+  const OUTFIT_POOL = [
+    {items:['Chaqueta Bering','Pantalón Yoko','Bota Reku'], icons:['jacket','pants','shoe']},
+    {items:['Chaqueta Bering','Camisa Doko','Zapatilla Ecoalf One'], icons:['jacket','top','shoe']},
+    {items:['Chaqueta Bering','Vestido Tunas','Bolso Cortina'], icons:['jacket','dress','bag']},
+    {items:['Chaqueta Bering','Jersey Fjord','Gorro Amazonia'], icons:['jacket','top','hat']},
+  ];
+  const OUTFIT_PALETTES = [
+    ['#0E2A35','#D8C6A1','#3E9C8F'],
+    ['#A85D3A','#FBF9F4','#0E2A35'],
+    ['#28695F','#D8C6A1','#A85D3A'],
+  ];
+  let stylistRound = 0;
+
+  function renderOutfits(){
+    const el = document.getElementById('outfits');
+    const picks = [0,1,2].map(i => OUTFIT_POOL[(stylistRound + i) % OUTFIT_POOL.length]);
+    el.innerHTML = picks.map((o, idx) => {
+      const palette = OUTFIT_PALETTES[idx % OUTFIT_PALETTES.length];
+      const icons = o.icons.map((k, j) => `
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; border-radius:10px; background:${palette[j % palette.length]};">
+          ${garmentIcon(k, '#FBF9F4')}
+        </div>`).join('');
+      return `
+        <div class="outfit-card">
+          <div class="outfit-photo" style="display:flex; gap:6px;">${icons}</div>
+          <ul>${o.items.map(it => `<li>· ${it}</li>`).join('')}</ul>
+        </div>`;
+    }).join('');
+  }
+
+  function shuffleOutfits(){
+    stylistRound++;
+    renderOutfits();
+  }
+
+  // ---- Circular hub ----
+  const HUB_STEPS = ['Enviar','Recoger','Reparar','Revender'];
+  let hubStep = 0;
+
+  function renderHubSteps(){
+    const el = document.getElementById('hub-steps');
+    el.innerHTML = HUB_STEPS.map((s, i) => `
+      <div class="hub-step">
+        <button class="${i <= hubStep ? 'done' : ''}" onclick="setHubStep(${i})">${i+1}</button>
+        <span class="${i <= hubStep ? 'done' : ''}">${s}</span>
+      </div>`).join('');
+    const btn = document.getElementById('hub-btn');
+    btn.textContent = hubStep >= HUB_STEPS.length - 1 ? 'Proceso completado' : `Marcar "${HUB_STEPS[hubStep+1]}"`;
+  }
+  function setHubStep(i){ hubStep = i; renderHubSteps(); }
+  function advanceHub(){ hubStep = Math.min(hubStep + 1, HUB_STEPS.length - 1); renderHubSteps(); }
+
+  // ---- init ----
+  renderTimeline();
+  renderRings();
+  updateScoreDisplay();
+  renderOutfits();
+  renderHubSteps();
+</script>
+
+</body>
+</html>
